@@ -10,66 +10,51 @@ namespace ConsoleApplication29
     {
         static void Main(string[] args)
         {
-            DateTime D = DateTime.Now;
-            List<int> srednia = new List<int>();
-            StreamWriter sw = File.AppendText("Wyniki.txt");
-            for (int y=0;y<10;y++)
-            { 
-            
-            Analiza A = new Analiza(40);
-            
-            Random szansa_krzyzowania = new Random();
+            DateTime d = DateTime.Now;
+            Analise a = new Analise(40);
+            Random crossChange = new Random();
+            Individual tempolaryBest= new Individual(2) {Fitness = -5000000};
             for (int i = 0; i < 200000; i++)
             {
-                    A.krzyzowanie_pmx(szansa_krzyzowania.Next(100));
-                    if (i%100000==0 & i!=0)
-                    {
-                        A.szansa_krzyzowania += 5;
-                        
-                    }
-                if(i==50000 | i == 150000)
-                        A.szansa_mutacji += 1;
-                    if (i < 50000)
+                a.PMXCross(crossChange.Next(100));
+                if (i % 100000 == 0 & i != 0)
                 {
-                        A.policz_sume_min_max();
-                        A.oblicz_procenty();
-                        A.selekcja_ruletka();
-                        
+                    a.CrossChange += 5;
+
+                }
+                if (i == 50000 | i == 150000)
+                    a.MutationChance += 1;
+                if (i < 50000)
+                {
+                    a.CalcuateSunMinAndMax();
+                    a.CalculatePercent();
+                    a.RouletteSelection();
                 }
                 else
                 {
-                        A.policz_sume_min_max();
-                        A.selekcja_turniej();
+                    a.CalcuateSunMinAndMax();
+                    a.TournamentSelection();
+                }
 
-                    }
-                A.mutacja();
-                    
-                A.ponowne_obliczanie_odleglosci();
-                    if(i%10000==0)
+                if (i == 1)
+                {
+                    tempolaryBest = new Individual(a.BestValue);
+                }
+                a.SwitchValuesMutation();
+                if (i % 10 == 0 && tempolaryBest.Fitness - a.BestValue.Fitness < 0.01)
+                {
+                    GnuplotCommandCreation operations = new GnuplotCommandCreation();
+                    foreach (var individual in a.VariableTable)
                     {
-                        A.Najlepsza_Trasa();
-                        
+                        operations.AddPoint(individual.VariableTable[0],individual.VariableTable[1],(int)individual.Fitness);
                     }
+                    operations.CreatepPlot($@"D:\Charts\function{Individual.UsedFitnessFunctionNumber}Iteration{i}.png",a.BestValue.GetPlotFunction(),Individual.Range,Individual.Range);
+                    new  GnuplotChartCreator().RunComangs(operations);
+                }
             }
-                sw.WriteLine(A.Najlepsza_Trasa());
-                srednia.Add(A.najlepsza.ocena);
-            }
-            sw.WriteLine(srednia.Average() + " Srednia");
-            sw.WriteLine("---------------------------------------------------------");
-            sw.Close();
-            //A.pokaz_tablice_miast();
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    A.policz_sume_min_max();
-            //    A.oblicz_procenty();
-            //    A.mutacja2(0);
-            //    A.ponowne_obliczanie_odleglosci();
-            //}
-            //Console.WriteLine();
-            //A.pokaz_tablice_miast();
 
             DateTime Db = DateTime.Now;
-            Console.WriteLine(Db.TimeOfDay - D.TimeOfDay);
+            Console.WriteLine(Db.TimeOfDay - d.TimeOfDay);
             Console.ReadKey();
 
         }

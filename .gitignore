@@ -4,3 +4,7 @@ Properties
 App.config
 /Class
 /Console
+/.vs/EvolutionAlgorithm/v15/Server/sqlite3
+/.vs/EvolutionAlgorithm/v15/.suo
+/EvolutionAlgorithm.sln
+/EvolutionAlgorithm.csproj.user
